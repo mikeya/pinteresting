@@ -1,9 +1,9 @@
 class PinsController < ApplicationController
   before_action :set_pin, only: [:show, :edit, :update, :destroy]
-
+  before_action :correct_user, only: [:edit, :update, :destroy]
+  before_action :authenticate_user!, except: [:index, :show]
   def index
     @pins = Pin.all
-    respond_with(@pins)
   end
 
   def show
@@ -11,7 +11,7 @@ class PinsController < ApplicationController
   end
 
   def new
-    @pin = Pin.new
+    @pin = current_user.pins.build
     respond_with(@pin)
   end
 
@@ -19,7 +19,7 @@ class PinsController < ApplicationController
   end
 
   def create
-    @pin = Pin.new(pin_params)
+    @pin = current_user.pins.build(pin_params)
     @pin.save
     respond_with(@pin)
   end
@@ -37,6 +37,11 @@ class PinsController < ApplicationController
   private
     def set_pin
       @pin = Pin.find(params[:id])
+    end
+
+    def correct_user
+      @pin = current_user.pins.find_by(id: params[:id])
+      redirect_to pins_path, notice: "Not authorized to edit this pin" if @pin.nil?
     end
 
     def pin_params
