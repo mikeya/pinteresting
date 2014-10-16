@@ -31,7 +31,7 @@ class PinsController < ApplicationController
 
   def destroy
     @pin.destroy
-    respond_with(@pin)
+    redirect_to pins_path
   end
 
   private
@@ -45,6 +45,6 @@ class PinsController < ApplicationController
     end
 
     def pin_params
-      params.require(:pin).permit(:description)
+      params.require(:pin).permit(:description, :image)
     end
 end
